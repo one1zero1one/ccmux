@@ -299,6 +299,13 @@ describe("hasFieldData", () => {
     expect(hasFieldData(session, "index")).toBe(true);
   });
 
+  it("returns true for title only when the session carries one", () => {
+    expect(hasFieldData(mockEnrichedSession(), "title")).toBe(false);
+    expect(
+      hasFieldData(mockEnrichedSession({ title: "vault-04" }), "title"),
+    ).toBe(true);
+  });
+
   it("returns false for prompt when missing", () => {
     expect(hasFieldData(mockEnrichedSession(), "prompt")).toBe(false);
     expect(

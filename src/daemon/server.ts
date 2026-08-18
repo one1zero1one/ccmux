@@ -20,7 +20,10 @@ import {
   sendLiteralToPane,
   sendPromptToPane,
 } from "./pane-io";
-import { showsIdleClaudeComposer } from "./pane-classify";
+import {
+  sessionTitleFromPaneTitle,
+  showsIdleClaudeComposer,
+} from "./pane-classify";
 import { resolveSessionRef } from "./session-ref";
 import type { SessionRefResolution } from "./session-ref";
 import { MAX_TURNS, parseTurnsField, renderTurns } from "./transcript-read";
@@ -893,6 +896,10 @@ export class DaemonServer {
       paneInfo?.sessionName,
     );
 
+    // Same paneInfo read as tmuxTarget: the name the agent keeps in its
+    // pane title (Claude Code updates it live, `/rename` included).
+    const title = sessionTitleFromPaneTitle(paneInfo?.paneTitle ?? null);
+
     // Synchronous map read, and omitted entirely when nothing is queued (the
     // overwhelmingly common case), so the field costs nothing on the wire for
     // sessions it doesn't apply to.
@@ -927,6 +934,7 @@ export class DaemonServer {
       worktreeRoot: gitInfo.worktreeRoot,
       branchPRs,
       originInvocationId,
+      title,
       ...(queued
         ? {
             pendingHandoff: {

@@ -456,6 +456,8 @@ export function hasFieldData(
       return !!session.gitBranch;
     case "pr":
       return sessionPRs(session).length > 0;
+    case "title":
+      return !!session.title;
   }
 }
 

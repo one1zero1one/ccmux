@@ -1,5 +1,6 @@
 import type { AttentionType, TmuxPane } from "../types/session";
 import { CLAUDE_AGENT_DEF } from "../lib/agents";
+import { isCcmuxPane } from "../lib/config";
 import { detectTerminalStatus } from "./terminal-detector";
 import { capturePane } from "./pane-io";
 import { stripAnsi } from "../lib/strip-ansi";
@@ -35,6 +36,21 @@ export function classifyPaneTitle(
   if (cp >= 0x2800 && cp <= 0x28ff) return "working";
   if (cp === 0x2733) return "not_working";
   return "unknown";
+}
+
+/**
+ * The session name an agent wrote into its pane title, or null when the
+ * title carries no name. Claude Code titles its pane `<glyph> <name>` —
+ * the glyph varies by state and version (braille spinner, ✳, ◐, …), so
+ * strip every leading non-alphanumeric symbol rather than a fixed set.
+ * ccmux's own panes (sidebar/picker) are not names; neither is an empty
+ * remainder (a title that was ONLY a status glyph).
+ */
+export function sessionTitleFromPaneTitle(title: string | null): string | null {
+  if (!title) return null;
+  if (isCcmuxPane(title)) return null;
+  const name = title.replace(/^[^\p{L}\p{N}]+/u, "").trim();
+  return name.length > 0 ? name : null;
 }
 
 /**

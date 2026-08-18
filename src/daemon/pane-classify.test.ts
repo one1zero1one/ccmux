@@ -4,6 +4,7 @@ import {
   classifyClaudePromptPane,
   classifyPaneContent,
   classifyPaneTitle,
+  sessionTitleFromPaneTitle,
   isNonAgentCommand,
   isShellCommand,
   showsIdleClaudeComposer,
@@ -35,6 +36,29 @@ describe("classifyPaneTitle", () => {
     expect(classifyPaneTitle("web-app")).toBe("unknown");
     expect(classifyPaneTitle("")).toBe("unknown");
     expect(classifyPaneTitle(null)).toBe("unknown");
+  });
+});
+
+describe("sessionTitleFromPaneTitle", () => {
+  it("strips the leading status glyph, whatever glyph set is in use", () => {
+    expect(sessionTitleFromPaneTitle("✳ vault-04")).toBe("vault-04");
+    expect(sessionTitleFromPaneTitle("◐ fix auth flow")).toBe("fix auth flow");
+    expect(sessionTitleFromPaneTitle("⠂ Claude Code")).toBe("Claude Code");
+  });
+
+  it("passes a bare name through unchanged", () => {
+    expect(sessionTitleFromPaneTitle("vault-04")).toBe("vault-04");
+  });
+
+  it("returns null when no name remains", () => {
+    expect(sessionTitleFromPaneTitle(null)).toBe(null);
+    expect(sessionTitleFromPaneTitle("")).toBe(null);
+    expect(sessionTitleFromPaneTitle("✳")).toBe(null);
+    expect(sessionTitleFromPaneTitle("⠿ ")).toBe(null);
+  });
+
+  it("rejects ccmux's own panes", () => {
+    expect(sessionTitleFromPaneTitle("ccmux-sidebar")).toBe(null);
   });
 });
 

@@ -659,6 +659,19 @@ const FieldCell: Component<{
       };
       return <text fg={dimColor(ctx, theme.blue)}>{label()}</text>;
     }
+    case "title": {
+      // The agent-maintained session name (see EnrichedSession.title).
+      // Thunk for the same reason as `branch` just above: rows stay
+      // mounted across SSE deltas, and a `/rename` must show up live.
+      // Capped so a long name cannot starve the row; primary-identity
+      // text color, matching the project cell's dirname.
+      const label = () => truncateText(ctx.session.title ?? "", 32);
+      return (
+        <box width={displayWidth(label())} flexShrink={0}>
+          <text fg={dimColor(ctx, theme.text)}>{label()}</text>
+        </box>
+      );
+    }
     case "pr": {
       const label = () => prLabel(ctx.session, entry.mode);
       // Color by PR state (red blocked / green approved / yellow open);

@@ -335,6 +335,15 @@ export interface EnrichedSession extends Session {
    */
   worktreeRoot: string | null;
   /**
+   * The session's display name, read from the pane title the agent
+   * maintains (Claude Code writes `<glyph> <name>` there, live — including
+   * `/rename` results). Status glyphs are stripped at enrich time
+   * (`sessionTitleFromPaneTitle`); `null`/absent when the pane sets no
+   * usable title. Enrich-time only, never persisted on the stored
+   * `Session`. Rendered by the TUI's `title` column field.
+   */
+  title?: string | null;
+  /**
    * The `ccmux invoke` invocation id that spawned this session, when it
    * runs inside a `ccmux-invoke-<id>` detached tmux session (the Claude
    * invoke path). Derived at enrich time from the pane's `sessionName`,
