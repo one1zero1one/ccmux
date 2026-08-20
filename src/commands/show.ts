@@ -20,10 +20,16 @@ function formatSession(session: EnrichedSession, style: IconStyle): string {
   const attn =
     session.attentionState && session.status === "idle" ? " {done}" : "";
   const pane = session.tmuxPane ? ` (${session.tmuxTarget})` : "";
+  // A background agent has no pane by design; without a marker it renders
+  // identically to a pane session and the list reads as phantom sessions.
+  const bg =
+    session.trackingMode === "background"
+      ? ` [bg${session.backgroundDetail ? `: ${session.backgroundDetail}` : ""}]`
+      : "";
   const time = formatRelativeTime(new Date(session.updatedAt), " ago");
 
   const prefix = icon ? `${icon} ` : "";
-  return `${prefix}${session.project} - ${session.status}${attention}${attn}${pane} - ${time}`;
+  return `${prefix}${session.project} - ${session.status}${attention}${attn}${bg}${pane} - ${time}`;
 }
 
 /**

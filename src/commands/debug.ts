@@ -21,8 +21,12 @@ interface DebugReport {
 
 function getTrackingModeLabel(
   session: Partial<EnrichedSession>,
-): "native" | "pane" | "unknown" {
-  if (session.trackingMode === "native" || session.trackingMode === "pane") {
+): "native" | "pane" | "background" | "unknown" {
+  if (
+    session.trackingMode === "native" ||
+    session.trackingMode === "pane" ||
+    session.trackingMode === "background"
+  ) {
     return session.trackingMode;
   }
 
